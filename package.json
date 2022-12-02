@@ -6,6 +6,7 @@
     "start": "node ./index.js"
   },
   "dependencies": {
+    "@vitalets/google-translate-api": "^9.0.0",
     "body-parser": "^1.20.1",
     "cookie-parser": "~1.4.4",
     "craiyon": "^1.0.0",
