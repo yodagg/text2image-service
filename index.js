@@ -1,11 +1,11 @@
 const express = require('express')
-const bodyParser = require('body-parser')
 const log4js = require('log4js')
+const _ = require('lodash')
 const text2image = require('./text2image')
 const app = express()
 const port = 9000
 
-app.use(bodyParser())
+app.use(express.json())
 
 log4js.addLayout('json', function (config) {
   return function (logEvent) {
@@ -18,6 +18,7 @@ log4js.configure({
     normal: {
       type: 'dateFile',
       filename: '/home/app/text2image/logs/search',
+      // filename: './logs/search',
       alwaysIncludePattern: true,
       pattern: 'yyyy-MM-dd.log',
       layout: { type: 'json', separator: ',' }
@@ -33,8 +34,9 @@ app.post('/', async (req, res) => {
   const logger = log4js.getLogger('normal')
 
   const { prompt } = req.body
+  const ip = _.get(res.headers, 'x-forwarded-for', req.ip)
 
-  logger.info(req.ip, prompt)
+  logger.info(ip, prompt)
 
   try {
     if ( !prompt ) throw new Error('Request parameter error.')
@@ -47,7 +49,7 @@ app.post('/', async (req, res) => {
   } catch (error) {
     const message = error.message
   
-    logger.info(req.ip, message)
+    logger.error(ip, message)
     res.send({
       code: -1,
       message: message,
